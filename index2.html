@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>InstaAnalytics Pro | محلل المتابعين المتقدم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --glass: rgba(30, 41, 59, 0.7);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            --bg-dark: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-hover: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #cbd5e1;
+            --glass: rgba(255, 255, 255, 0.8);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* خلفية متحركة */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            animation: bgPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.1); opacity: 0.6; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* الهيدر */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* أزرار التحكم العلوية */
+        .top-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .control-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* منطقة السحب والإفلات */
+        .drop-zone {
+            border: 3px dashed var(--border);
+            border-radius: 24px;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .drop-zone:hover::before {
+            left: 100%;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            transform: scale(1.02);
+        }
+
+        .drop-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .drop-text {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .drop-hint {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+
+        /* شبكة البطاقات */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .stat-card.followers::after { background: var(--gradient-1); }
+        .stat-card.following::after { background: var(--gradient-2); }
+        .stat-card.friends::after { background: linear-gradient(90deg, #10b981, #059669); }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .stat-card.followers .card-icon { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+        .stat-card.following .card-icon { background: rgba(236, 72, 153, 0.1); color: var(--secondary); }
+        .stat-card.friends .card-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+
+        .counter {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin: 10px 0;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-hover);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .upload-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .list-container {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 12px;
+            background: var(--bg-dark);
+            padding: 10px;
+            display: none;
+        }
+
+        .list-container.has-data {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            border-right: 3px solid var(--primary);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* شريط التحليل */
+        .analysis-bar {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+        }
+
+        .analyze-btn {
+            flex: 1;
+            min-width: 250px;
+            padding: 20px 40px;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.5);
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.6);
+        }
+
+        .analyze-btn:active {
+            transform: scale(0.98);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .analyze-btn.processing {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .analyze-btn.processing .spinner {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* نتائج التحليل */
+        .results-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results-section.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::after {
+            content: attr(data-count);
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .tab-btn[data-count="0"]::after {
+            display: none;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--danger);
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--danger);
+        }
+
+        .result-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .result-card.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .result-card.copied .user-handle {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-handle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+
+        .result-card.copied .user-handle {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .result-card:hover .copy-hint {
+            opacity: 1;
+        }
+
+        /* الإحصائيات */
+        .stats-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* زر التصدير */
+        .export-menu {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+        }
+
+        .export-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.5);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .export-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .export-options {
+            position: absolute;
+            bottom: 70px;
+            left: 0;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: none;
+            min-width: 200px;
+            animation: slideUp 0.3s ease;
+        }
+
+        .export-options.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .export-option {
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .export-option:hover {
+            background: var(--bg-hover);
+        }
+
+        /* التنبيهات */
+        .toast-container {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border-right: 4px solid var(--success);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.3s ease;
+            min-width: 300px;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.error {
+            border-right-color: var(--danger);
+        }
+
+        /* البحث */
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* شريط التقدم */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-hover);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 3px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo { font-size: 2rem; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+            .container { padding: 10px; }
+            .toast-container { right: 10px; left: 10px; top: 10px; }
+            .toast { min-width: unset; width: 100%; }
+        }
+
+        /* تأثيرات إضافية */
+        .glow {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover .glow {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-animation"></div>
+
+<div class="container">
+    <header class="header">
+        <h1 class="logo">InstaAnalytics Pro</h1>
+        <p class="subtitle">منصة تحليل المتابعين المتقدمة الذكية</p>
+    </header>
+
+    <div class="top-controls">
+        <button class="control-btn" onclick="toggleTheme()">
+            <span id="theme-icon">🌙</span>
+            <span id="theme-text">الوضع الليلي</span>
+        </button>
+        <button class="control-btn" onclick="loadSampleData()">
+            <span>📊</span>
+            <span>بيانات تجريبية</span>
+        </button>
+        <button class="control-btn" onclick="clearAllData()">
+            <span>🗑️</span>
+            <span>مسح الكل</span>
+        </button>
+    </div>
+
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('globalFileInput').click()">
+        <div class="drop-icon">📁</div>
+        <div class="drop-text">اسحب الملفات هنا أو انقر للاختيار</div>
+        <div class="drop-hint">يدعم HTML, TXT, JSON - يمكنك رفع جميع الملفات دفعة واحدة</div>
+        <input type="file" id="globalFileInput" multiple accept=".html,.htm,.txt,.json" style="display: none;" onchange="handleGlobalFiles(this.files)">
+    </div>
+
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="cards-grid">
+        <div class="stat-card followers">
+            <div class="glow"></div>
+            <div class="card-header">
+                <div>
+                    <div class="card-title">المتابعون</div>
+                    <div class="counter" id="count-followers">0</div>
+                </div>
+                <div class="card-icon">👥</div>
+            </div>
+            <div class="file-input-wrapper">
+                <input type="file" id="file-followers" accept=".html,.htm,.txt,.json" onchange="handleFile(this, 'followers')">
+                <label for="file-followers" class="upload-btn">
+                    <span>📤</span>
+                    <span>اختيار الملف</span>
+                </label>
+            </div>
+            <div class="list-container" id="list-followers"></div>
+        </div>
+
+        <div class="stat-card following">
+            <div class="glow"></div>
+            <div class="card-header">
+                <div>
+                    <div class="card-title">المتابَعون</div>
+                    <div class="counter" id="count-following">0</div>
+                </div>
+                <div class="card-icon">🎯</div>
+            </div>
+            <div class="file-input-wrapper">
+                <input type="file" id="file-following" accept=".html,.htm,.txt,.json" onchange="handleFile(this, 'following')">
+                <label for="file-following" class="upload-btn">
+                    <span>📤</span>
+                    <span>اختيار الملف</span>
+                </label>
+            </div>
+            <div class="list-container" id="list-following"></div>
+        </div>
+
+        <div class="stat-card friends">
+            <div class="glow"></div>
+            <div class="card-header">
+                <div>
+                    <div class="card-title">الأصدقاء (المتبادل)</div>
+                    <div class="counter" id="count-friends">0</div>
+                </div>
+                <div class="card-icon">🤝</div>
+            </div>
+            <div class="file-input-wrapper">
+                <input type="file" id="file-friends" accept=".html,.htm,.txt,.json" onchange="handleFile(this, 'friends')">
+                <label for="file-friends" class="upload-btn">
+                    <span>📤</span>
+                    <span>اختيار الملف</span>
+                </label>
+            </div>
+            <div class="list-container" id="list-friends"></div>
+        </div>
+    </div>
+
+    <div class="analysis-bar">
+        <button class="analyze-btn" id="analyzeBtn" onclick="performAnalysis()">
+            <span class="spinner"></span>
+            <span>🚀 بدء التحليل الذكي</span>
+        </button>
+    </div>
+
+    <div class="stats-dashboard" id="statsDashboard" style="display: none;">
+        <div class="stat-box">
+            <div class="stat-label">نسبة التفاعل</div>
+            <div class="stat-number" id="ratioStat">0%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">غير المتبادلين</div>
+            <div class="stat-number" id="notFollowingBack">0</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">لا تتابعهم</div>
+            <div class="stat-number" id="notFollowing">0</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">القيمة التقديرية</div>
+            <div class="stat-number" id="accountValue">$0</div>
+        </div>
+    </div>
+
+    <div class="results-section" id="resultsSection">
+        <input type="text" class="search-box" id="searchBox" placeholder="🔍 البحث في النتائج..." oninput="filterResults(this.value)">
+        
+        <div class="results-tabs">
+            <button class="tab-btn active" onclick="switchTab('notFollowingBack')" data-count="0" id="tab-notFollowingBack">
+                لا يتابعونك ⚠️
+            </button>
+            <button class="tab-btn" onclick="switchTab('notFollowing')" data-count="0" id="tab-notFollowing">
+                لا تتابعهم 🔄
+            </button>
+            <button class="tab-btn" onclick="switchTab('mutual')" data-count="0" id="tab-mutual">
+                متبادلون 💎
+            </button>
+            <button class="tab-btn" onclick="switchTab('fans')" data-count="0" id="tab-fans">
+                المعجبون ⭐
+            </button>
+        </div>
+
+        <div class="results-grid" id="resultsGrid"></div>
+        
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">🔍</div>
+            <div>لا توجد نتائج في هذه الفئة</div>
+        </div>
+    </div>
+</div>
+
+<div class="export-menu">
+    <button class="export-btn" onclick="toggleExportMenu()">💾</button>
+    <div class="export-options" id="exportOptions">
+        <div class="export-option" onclick="exportData('txt')">
+            <span>📄</span>
+            <span>تصدير TXT</span>
+        </div>
+        <div class="export-option" onclick="exportData('json')">
+            <span>📋</span>
+            <span>تصدير JSON</span>
+        </div>
+        <div class="export-option" onclick="exportData('csv')">
+            <span>📊</span>
+            <span>تصدير CSV</span>
+        </div>
+        <div class="export-option" onclick="copyAll()">
+            <span>📋</span>
+            <span>نسخ الكل</span>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // البيانات
+    const appData = {
+        followers: new Set(),
+        following: new Set(),
+        friends: new Set(),
+        results: {
+            notFollowingBack: [],
+            notFollowing: [],
+            mutual: [],
+            fans: []
+        }
+    };
+
+    let currentTab = 'notFollowingBack';
+
+    // منطق التحميل والمعالجة
+    function handleFile(input, type) {
+        if (input.files.length > 0) {
+            processFile(input.files[0], type);
+            input.value = ''; // إعادة التعيين للسماح بتحميل نفس الملف
+        }
+    }
+
+    function handleGlobalFiles(files) {
+        let processed = 0;
+        updateProgress(0);
+        
+        Array.from(files).forEach((file, index) => {
+            setTimeout(() => {
+                autoDetectAndProcess(file);
+                processed++;
+                updateProgress((processed / files.length) * 100);
+                
+                if (processed === files.length) {
+                    setTimeout(() => {
+                        document.getElementById('progressBar').classList.remove('active');
+                        showToast('✅ تم معالجة جميع الملفات');
+                    }, 500);
+                }
+            }, index * 100);
+        });
+    }
+
+    function autoDetectAndProcess(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target.result;
+            const names = extractNames(content);
+            
+            // محاولة تحديد النوع تلقائياً بناءً على المحتوى
+            let type = detectTypeByContent(names);
+            if (type) {
+                appData[type] = new Set([...appData[type], ...names]);
+                updateUI(type);
+                showToast(`✅ تم تحميل ${names.length} اسم في ${getTypeName(type)}`);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function detectTypeByContent(names) {
+        // منطق بسيط: إذا كان العدد كبير جداً قد يكون followers
+        // يمكن تحسين هذا المنطق حسب الحاجة
+        if (names.length > 1000) return 'followers';
+        return 'following'; // افتراضي
+    }
+
+    function processFile(file, type) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const names = extractNames(e.target.result);
+            appData[type] = new Set(names);
+            updateUI(type);
+            showToast(`✅ تم تحميل ${names.length} اسم`);
+        };
+        reader.readAsText(file);
+    }
+
+    function extractNames(content) {
+        const names = new Set();
+        
+        // استخراج من HTML
+        const htmlMatches = content.match(/>([^<]{2,50})</g) || [];
+        htmlMatches.forEach(match => {
+            const clean = match.replace(/[><]/g, '').trim();
+            if (isValidName(clean)) names.add(clean);
+        });
+
+        // استخراج من أسطر منفصلة
+        if (names.size === 0) {
+            content.split(/\r?\n/).forEach(line => {
+                const clean = line.trim();
+                if (isValidName(clean)) names.add(clean);
+            });
+        }
+
+        return [...names];
+    }
+
+    function isValidName(name) {
+        if (name.length < 2 || name.length > 50) return false;
+        if (/^\d+$/.test(name)) return false;
+        if (name.includes('http') || name.includes('@')) return false;
+        
+        // تجاهل التواريخ
+        const dateKeywords = ['يناير', 'فبراير', '202', 'UTC', 'دقيقة', 'ساعة'];
+        if (dateKeywords.some(k => name.includes(k))) {
+            // محاولة استخراج الاسم فقط
+            const parts = name.split(/[\d\u0600-\u06FF]+/);
+            return parts.some(p => p.trim().length > 2);
+        }
+        
+        return true;
+    }
+
+    function updateUI(type) {
+        const count = appData[type].size;
+        document.getElementById(`count-${type}`).textContent = count.toLocaleString();
+        
+        const listContainer = document.getElementById(`list-${type}`);
+        const names = [...appData[type]].slice(0, 50); // عرض أول 50 فقط للأداء
+        
+        listContainer.innerHTML = names.map(name => `
+            <div class="user-item">
+                <div class="user-avatar">${name.charAt(0).toUpperCase()}</div>
+                <div>${escapeHtml(name)}</div>
+            </div>
+        `).join('');
+        
+        if (count > 50) {
+            listContainer.innerHTML += `<div class="user-item" style="justify-content: center; opacity: 0.6;">و ${count - 50} آخرين...</div>`;
+        }
+        
+        listContainer.classList.add('has-data');
+    }
+
+    // التحليل المتقدم
+    function performAnalysis() {
+        const btn = document.getElementById('analyzeBtn');
+        
+        if (appData.followers.size === 0 || appData.following.size === 0) {
+            showToast('⚠️ يرجى تحميل قوائم المتابعين والمتابَعين أولاً', 'error');
+            return;
+        }
+
+        btn.classList.add('processing');
+        btn.disabled = true;
+
+        // محاكاة معالجة ثقيلة للواقعية
+        setTimeout(() => {
+            const followers = appData.followers;
+            const following = appData.following;
+
+            // حساب النتائج
+            appData.results.notFollowingBack = [...following].filter(x => !followers.has(x));
+            appData.results.notFollowing = [...followers].filter(x => !following.has(x));
+            appData.results.mutual = [...followers].filter(x => following.has(x));
+            appData.results.fans = [...followers].filter(x => !following.has(x)); // نفس notFollowing لكن عرض مختلف
+
+            // تحديث الأرقام في التبويبات
+            updateTabCounts();
+            
+            // عرض لوحة الإحصائيات
+            showStatsDashboard(followers.size, following.size);
+            
+            // عرض النتائج
+            document.getElementById('resultsSection').classList.add('visible');
+            switchTab('notFollowingBack');
+            
+            btn.classList.remove('processing');
+            btn.disabled = false;
+            
+            showToast('✅ اكتمل التحليل بنجاح!');
+            
+            // تمرير للنتائج
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }, 1500);
+    }
+
+    function updateTabCounts() {
+        Object.keys(appData.results).forEach(key => {
+            const btn = document.getElementById(`tab-${key}`);
+            if (btn) {
+                btn.setAttribute('data-count', appData.results[key].length);
+            }
+        });
+    }
+
+    function showStatsDashboard(followers, following) {
+        const dashboard = document.getElementById('statsDashboard');
+        dashboard.style.display = 'grid';
+        
+        const ratio = followers > 0 ? ((following / followers) * 100).toFixed(1) : 0;
+        document.getElementById('ratioStat').textContent = ratio + '%';
+        document.getElementById('notFollowingBack').textContent = appData.results.notFollowingBack.length;
+        document.getElementById('notFollowing').textContent = appData.results.notFollowing.length;
+        document.getElementById('accountValue').textContent = '$' + (followers * 0.05).toFixed(0);
+    }
+
+    function switchTab(tabName) {
+        currentTab = tabName;
+        
+        // تحديث الأزرار
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+        
+        // عرض البيانات
+        displayResults(appData.results[tabName]);
+    }
+
+    function displayResults(data) {
+        const grid = document.getElementById('resultsGrid');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (data.length === 0) {
+            grid.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        
+        // عرض أول 100 فقط للأداء، مع تحميل المزيد عند التمرير
+        const displayData = data.slice(0, 100);
+        
+        grid.innerHTML = displayData.map((name, index) => `
+            <div class="result-card" onclick="copyToClipboard('${escapeHtml(name)}', this)">
+                <div class="copy-hint">انقر للنسخ</div>
+                <div class="user-name">
+                    <span>${escapeHtml(name)}</span>
+                </div>
+                <div class="user-handle">@user_${index + 1}</div>
+            </div>
+        `).join('');
+        
+        if (data.length > 100) {
+            grid.innerHTML += `
+                <div style="grid-column: 1/-1; text-align: center; padding: 20px; color: var(--text-secondary);">
+                    و ${data.length - 100} نتيجة أخرى...
+                </div>
+            `;
+        }
+    }
+
+    function filterResults(query) {
+        if (!query) {
+            displayResults(appData.results[currentTab]);
+            return;
+        }
+        
+        const filtered = appData.results[currentTab].filter(name => 
+            name.toLowerCase().includes(query.toLowerCase())
+        );
+        displayResults(filtered);
+    }
+
+    // الأدوات المساعدة
+    function copyToClipboard(text, element) {
+        navigator.clipboard.writeText(text).then(() => {
+            element.classList.add('copied');
+            element.innerHTML = `
+                <div class="user-name">
+                    <span>✅ تم النسخ</span>
+                </div>
+                <div class="user-handle">${escapeHtml(text)}</div>
+            `;
+            showToast('✅ تم النسخ إلى الحافظة');
+            
+            setTimeout(() => {
+                element.classList.remove('copied');
+                element.innerHTML = `
+                    <div class="copy-hint">انقر للنسخ</div>
+                    <div class="user-name">
+                        <span>${escapeHtml(text)}</span>
+                    </div>
+                    <div class="user-handle">@user</div>
+                `;
+            }, 2000);
+        });
+    }
+
+    function exportData(format) {
+        const data = appData.results[currentTab];
+        if (data.length === 0) {
+            showToast('⚠️ لا توجد بيانات للتصدير', 'error');
+            return;
+        }
+
+        let content, mimeType, extension;
+        
+        switch(format) {
+            case 'json':
+                content = JSON.stringify(data, null, 2);
+                mimeType = 'application/json';
+                extension = 'json';
+                break;
+            case 'csv':
+                content = 'Username\n' + data.join('\n');
+                mimeType = 'text/csv';
+                extension = 'csv';
+                break;
+            case 'txt':
+                content = data.join('\n');
+                mimeType = 'text/plain';
+                extension = 'txt';
+                break;
+        }
+
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `instagram_analysis_${currentTab}_${new Date().toISOString().split('T')[0]}.${extension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast(`✅ تم التصدير بصيغة ${format.toUpperCase()}`);
+        toggleExportMenu();
+    }
+
+    function copyAll() {
+        const data = appData.results[currentTab];
+        if (data.length === 0) return;
+        
+        navigator.clipboard.writeText(data.join('\n')).then(() => {
+            showToast(`✅ تم نسخ ${data.length} اسم`);
+        });
+        toggleExportMenu();
+    }
+
+    // إدارة الواجهة
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+        document.getElementById('theme-text').textContent = isDark ? 'الوضع النهاري' : 'الوضع الليلي';
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    function updateProgress(percent) {
+        document.getElementById('progressBar').classList.add('active');
+        document.getElementById('progressFill').style.width = percent + '%';
+    }
+
+    function toggleExportMenu() {
+        document.getElementById('exportOptions').classList.toggle('show');
+    }
+
+    function getTypeName(type) {
+        const names = {
+            followers: 'المتابعين',
+            following: 'المتابَعين',
+            friends: 'الأصدقاء'
+        };
+        return names[type] || type;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function clearAllData() {
+        if (!confirm('هل أنت متأكد من مسح جميع البيانات؟')) return;
+        
+        appData.followers.clear();
+        appData.following.clear();
+        appData.friends.clear();
+        
+        ['followers', 'following', 'friends'].forEach(type => {
+            document.getElementById(`count-${type}`).textContent = '0';
+            document.getElementById(`list-${type}`).innerHTML = '';
+            document.getElementById(`list-${type}`).classList.remove('has-data');
+        });
+        
+        document.getElementById('resultsSection').classList.remove('visible');
+        document.getElementById('statsDashboard').style.display = 'none';
+        
+        showToast('🗑️ تم مسح جميع البيانات');
+    }
+
+    function loadSampleData() {
+        // بيانات تجريبية للعرض
+        const sampleFollowers = ['أحمد', 'محمد', 'سارة', 'خالد', 'نورا', 'فاطمة', 'علي'];
+        const sampleFollowing = ['أحمد', 'محمد', 'سارة', 'عمر', 'ليلى', 'يوسف', 'هند'];
+        
+        appData.followers = new Set(sampleFollowers);
+        appData.following = new Set(sampleFollowing);
+        
+        updateUI('followers');
+        updateUI('following');
+        showToast('📊 تم تحميل البيانات التجريبية');
+    }
+
+    // السحب والإفلات
+    const dropZone = document.getElementById('dropZone');
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        handleGlobalFiles(e.dataTransfer.files);
+    });
+
+    // إغلاق قائمة التصدير عند النقر خارجها
+    document.addEventListener('click', (e) => {
+        const menu = document.getElementById('exportOptions');
+        const btn = document.querySelector('.export-btn');
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+            menu.classList.remove('show');
+        }
+    });
+
+    // اختصارات لوحة المفاتيح
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case 'Enter':
+                    e.preventDefault();
+                    performAnalysis();
+                    break;
+                case 'e':
+                    e.preventDefault();
+                    toggleExportMenu();
+                    break;
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
